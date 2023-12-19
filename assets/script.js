@@ -54,13 +54,13 @@ var allHighScores = [
     },
     {
         rank: "2.",
-        initials: "",
-        score: 0,
+        initials: "BAD",
+        score: 2,
     },
     {
         rank: "3.",
-        initials: "",
-        score: 0,
+        initials: "JEB",
+        score: 1,
     },
     
 ]
@@ -74,7 +74,7 @@ var questionText = document.querySelector("#question-text");
 var questionAnswers = document.querySelector("#question-answers");
 var scoreSection = document.querySelector("#score");
 var acceptButton = document.querySelector("#accept");
-var playerInitals = document.querySelector("#initials");
+var playerInitals = document.getElementById("initials");
 var highScoreSection = document.querySelector("#highScore");
 
 //Initial values for game
@@ -176,27 +176,52 @@ function init(){
     questionAnswers.addEventListener("click", answerClickHandler);
 }
 
+//Check score versus other scores on the high score table
 acceptButton.addEventListener("click", function(event){
     event.preventDefault();
+    var finalInitials = playerInitals.value;
+    // var finalScore = totalCorrect;
+    console.log(finalInitials);
     scoreSection.style.display = "none";
     highScoreSection.style.display = "flex";
-
-    for (var y = 0; y < allHighScores.length; y++)
-        if (totalCorrect >= allHighScores.score[y]){
-            allHighScores.score[y] = totalCorrect;
-            allHighScores.initials[y] = playerInitals;
+    if (JSON.parse(localStorage.getItem("allHighScores") !== null)){
+        var retrieveHighScores = JSON.parse(localStorage.getItem("allHighScores"));
+        for (var y = 0; y < allHighScores.length; y++){
+            if (totalCorrect > retrieveHighScores[y].score){
+                retrieveHighScores[y].score = totalCorrect;
+                retrieveHighScores[y].initials = finalInitials;
+                allHighScores = retrieveHighScores;
+                localStorage.setItem("allHighScores", JSON.stringify(allHighScores));
+                break;
+            }
+        }
+    }
+    else{
+    for (var y = 0; y < allHighScores.length; y++){
+        if (totalCorrect > allHighScores[y].score){
+            allHighScores[y].score = totalCorrect;
+            allHighScores[y].initials = finalInitials;
+            localStorage.setItem("allHighScores", JSON.stringify(allHighScores));
             break;
         }
-
-    localStorage.setItem("allHighScores", JSON.stringify(allHighScores));
+    }
+}
+    
     renderScores();
 
 });
 
+// display high scores
 function renderScores() {
     var retrieveHighScores = JSON.parse(localStorage.getItem("allHighScores"));
     if (retrieveHighScores !== null){
-        document.querySelector("#highScoreArea").textContent = allHighScores.initials + "Score: " + allHighScores.score;
+        for (var y = 0; y < allHighScores.length; y++){
+            document.querySelector("#highScoreArea").textContent += "Rank: " + allHighScores[y].rank + "\n";
+            document.querySelector("#highScoreArea").textContent += "Score: " + allHighScores[y].score + "\n";
+            document.querySelector("#highScoreArea").textContent += "Initials: " + allHighScores[y].initials + "\n\n";
+
+        }
+        
     }
 
 }

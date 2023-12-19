@@ -84,10 +84,16 @@ header > * {
 
 #score{
     display: none;
-    flex-direction: row;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #highScore{
     display: none;
     flex-direction: row;
+}
+
+#row {
+    display: flex;
 }
